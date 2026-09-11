@@ -88,7 +88,7 @@ select{
 }
 .count-pill{margin-left:auto; font-size:.8rem; color:var(--text-dim); white-space:nowrap;}
 .table-scroll{overflow-x:auto; border:1px solid var(--border); border-radius:10px; background:var(--surface); box-shadow:var(--shadow);}
-table{border-collapse:collapse; width:100%; min-width:1040px;}
+table{border-collapse:collapse; width:100%; min-width:1120px;}
 thead th{
   text-align:left; font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; color:var(--text-dim);
   padding:11px 12px; border-bottom:1px solid var(--border); background:var(--surface-2); white-space:nowrap;
@@ -137,7 +137,50 @@ tbody tr:hover{background:var(--surface-2);}
 .field textarea{resize:vertical; min-height:60px; font-family:inherit;}
 .modal-actions{display:flex; justify-content:flex-end; gap:10px; margin-top:20px;}
 .hint{font-size:.78rem; color:var(--text-dim); margin-top:14px; line-height:1.5;}
+.chip-row{display:flex; flex-wrap:wrap; gap:6px;}
+.chip{
+  border:1px solid var(--border); background:var(--bg); color:var(--text-dim); border-radius:99px;
+  padding:5px 11px; font-size:.78rem; font-weight:500;
+}
+.chip[aria-pressed="true"]{background:var(--ink); color:var(--bg); border-color:var(--ink);}
 footer{margin-top:26px; text-align:center; color:var(--text-dim); font-size:.78rem;}
+
+/* summary breakdown */
+.summary-toggle{
+  display:flex; align-items:center; gap:6px; background:none; border:none; color:var(--text-dim);
+  font-size:.82rem; font-weight:500; padding:4px 2px; margin-bottom:14px; cursor:pointer;
+}
+.summary-toggle:hover{color:var(--text);}
+.summary-toggle .chev{transition:transform .15s;}
+.summary-toggle[aria-expanded="false"] .chev{transform:rotate(-90deg);}
+.summary{
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px; margin-bottom:20px;
+}
+.summary[hidden]{display:none;}
+.summary-panel{background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:14px 16px; box-shadow:var(--shadow);}
+.summary-panel h3{font-family:"IBM Plex Sans",sans-serif; font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; color:var(--text-dim); font-weight:600; margin-bottom:11px;}
+.summary-row{display:flex; align-items:center; gap:8px; margin-bottom:7px;}
+.summary-row:last-child{margin-bottom:0;}
+.summary-row .s-label{flex:0 0 108px; font-size:.8rem; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.summary-row .s-track{flex:1; height:7px; background:var(--surface-2); border-radius:99px; overflow:hidden;}
+.summary-row .s-fill{height:100%; border-radius:99px; background:var(--brass);}
+.summary-row .s-fill.good{background:var(--good);}
+.summary-row .s-fill.bad{background:var(--bad);}
+.summary-row .s-fill.unknown{background:var(--unknown);}
+.summary-row .s-count{flex:0 0 20px; text-align:right; font-size:.78rem; color:var(--text-dim);}
+
+/* documents checklist */
+.docs-progress{font-size:.78rem; color:var(--text-dim); white-space:nowrap;}
+.docs-progress.complete{color:var(--good); font-weight:600;}
+.doc-list{display:flex; flex-direction:column; gap:6px; margin-top:8px;}
+.doc-row{display:flex; align-items:center; gap:8px; font-size:.85rem;}
+.doc-row input[type="checkbox"]{width:15px; height:15px; accent-color:var(--ink); flex:none;}
+.doc-row .doc-name{flex:1;}
+.doc-row .doc-name.done{text-decoration:line-through; color:var(--text-dim);}
+.doc-row .doc-remove{border:none; background:none; color:var(--text-dim); cursor:pointer; font-size:.85rem; padding:2px 4px;}
+.doc-row .doc-remove:hover{color:var(--bad);}
+.doc-add-row{display:flex; gap:8px; margin-top:10px;}
+.doc-add-row input{flex:1;}
 @media (max-width:640px){
   .field-grid{grid-template-columns:1fr;}
   header{flex-direction:column; align-items:flex-start;}
@@ -150,7 +193,7 @@ footer{margin-top:26px; text-align:center; color:var(--text-dim); font-size:.78r
   <header>
     <div class="title-block">
       <h1>Faculty Search Ledger</h1>
-      <div class="sub">Math · statistics · data science faculty, visiting, postdoc &amp; tenure-track openings — your local copy.</div>
+      <div class="sub">Math · statistics · data science faculty, visiting, postdoc &amp; tenure-track openings across MathJobs, AJO, AMSTAT, INFORMS, HigherEdJobs, Chronicle, SIAM, ACM, Nature Careers &amp; AcademicPositions — your local copy.</div>
     </div>
     <div class="header-actions">
       <button class="btn btn-ghost" id="exportBtn" title="Download current data as data/jobs.json">⭳ Export JSON</button>
@@ -162,6 +205,11 @@ footer{margin-top:26px; text-align:center; color:var(--text-dim); font-size:.78r
   </header>
 
   <div class="stats" id="stats"></div>
+
+  <button type="button" class="summary-toggle" id="summaryToggle" aria-expanded="true">
+    <span class="chev">▾</span> Summary breakdown
+  </button>
+  <div class="summary" id="summary"></div>
 
   <div class="toolbar">
     <input type="search" id="searchInput" placeholder="Search title, institution, notes…">
@@ -209,6 +257,7 @@ footer{margin-top:26px; text-align:center; color:var(--text-dim); font-size:.78r
           <th>Sponsorship</th>
           <th>H-1B filer</th>
           <th>Requirements</th>
+          <th>Docs</th>
           <th>Deadline</th>
           <th>Status</th>
           <th></th>
@@ -219,7 +268,7 @@ footer{margin-top:26px; text-align:center; color:var(--text-dim); font-size:.78r
     <div class="empty" id="emptyState" hidden>No postings match these filters. Add one, or import a jobs.json.</div>
   </div>
 
-  <div class="hint">This is your local, git-tracked copy: everything you add or change is saved to this browser's storage automatically. To version it, click <strong>Export JSON</strong> and overwrite <code>jobs.json</code> before you commit — that file is the portable source of truth this ledger reads on first load. There's no live web search from this page; ask Claude in a chat to check the job sites and hand you an updated jobs.json when you want fresh postings.</div>
+  <div class="hint">This is your local, git-tracked copy: everything you add or change is saved to this browser's storage automatically. To version it, click <strong>Export JSON</strong> and overwrite <code>jobs.json</code> before you commit — that file is the portable source of truth this ledger reads on first load. There's no live web search from this page; ask Claude in a chat to check the job sites and hand you an updated jobs.json when you want fresh postings. <strong>Sponsorship</strong> reflects what the individual posting states (often unstated); <strong>H-1B filer</strong> is whether the *institution* has a public history of filing H-1B petitions — a more reliable signal. <strong>Docs</strong> tracks which application materials you've prepared per posting — open a row to check them off.</div>
 
   <footer>Personal use only.</footer>
 </div>
@@ -248,6 +297,8 @@ footer{margin-top:26px; text-align:center; color:var(--text-dim); font-size:.78r
             <option>Chronicle</option>
             <option>SIAM</option>
             <option>ACM</option>
+            <option>Nature Careers</option>
+            <option>AcademicPositions</option>
             <option>Other</option>
           </select>
         </div>
@@ -306,6 +357,15 @@ footer{margin-top:26px; text-align:center; color:var(--text-dim); font-size:.78r
           <textarea id="f_requirements" placeholder="PhD required by start date, 3 letters, teaching statement…"></textarea>
         </div>
         <div class="field full">
+          <label>Required documents</label>
+          <div class="chip-row" id="docPresets"></div>
+          <div class="doc-list" id="docList"></div>
+          <div class="doc-add-row">
+            <input type="text" id="docCustomInput" placeholder="Add another document…">
+            <button type="button" class="btn" id="docAddBtn">Add</button>
+          </div>
+        </div>
+        <div class="field full">
           <label for="f_notes">Notes</label>
           <textarea id="f_notes" placeholder="Anything you want to remember about this one"></textarea>
         </div>
@@ -323,7 +383,10 @@ footer{margin-top:26px; text-align:center; color:var(--text-dim); font-size:.78r
 (function(){
   "use strict";
   var STORAGE_KEY = "facultyLedgerJobs";
-  var SITES = ["MathJobs","AcademicJobsOnline","AMSTAT","INFORMS","HigherEdJobs","Chronicle","SIAM","ACM","Other"];
+  var SITES = ["MathJobs","AcademicJobsOnline","AMSTAT","INFORMS","HigherEdJobs","Chronicle","SIAM","ACM","Nature Careers","AcademicPositions","Other"];
+  var POSITION_TYPES = ["Tenure-Track","Faculty","Visiting","Postdoc","Other"];
+  var STATUSES = ["New","Interested","Applied","Interview","Offer","Rejected","Withdrawn"];
+  var DOC_PRESETS = ["CV/Resume","Cover Letter","Research Statement","Teaching Statement","Diversity Statement","Reference Letters (3)","Transcripts","Writing Sample"];
   var siteFilterEl = document.getElementById("siteFilter");
   SITES.forEach(function(s){
     var o = document.createElement("option"); o.textContent = s; siteFilterEl.appendChild(o);
@@ -334,7 +397,15 @@ footer{margin-top:26px; text-align:center; color:var(--text-dim); font-size:.78r
   var jobBody = document.getElementById("jobBody");
   var emptyState = document.getElementById("emptyState");
   var statsEl = document.getElementById("stats");
+  var summaryEl = document.getElementById("summary");
+  var summaryToggle = document.getElementById("summaryToggle");
   var countPill = document.getElementById("countPill");
+
+  summaryToggle.addEventListener("click", function(){
+    var expanded = summaryToggle.getAttribute("aria-expanded") === "true";
+    summaryToggle.setAttribute("aria-expanded", String(!expanded));
+    summaryEl.hidden = expanded;
+  });
 
   var searchInput = document.getElementById("searchInput");
   var typeFilter = document.getElementById("typeFilter");
@@ -406,6 +477,10 @@ footer{margin-top:26px; text-align:center; color:var(--text-dim); font-size:.78r
       var tr = document.createElement("tr");
       var days = daysUntil(j.deadline);
       var soon = days !== null && days >= 0 && days <= 10;
+      var docs = j.documents || [];
+      var docsDone = docs.filter(function(d){ return d.done; }).length;
+      var docsLabel = docs.length ? (docsDone + "/" + docs.length) : "—";
+      var docsComplete = docs.length > 0 && docsDone === docs.length;
       tr.innerHTML =
         '<td><div class="job-title">' + (j.url ? '<a href="'+escapeHtml(j.url)+'" target="_blank" rel="noopener">'+escapeHtml(j.title||"Untitled")+'</a>' : escapeHtml(j.title||"Untitled")) + '</div>' +
           '<div class="institution">' + escapeHtml(j.institution||"") + '</div></td>' +
@@ -414,16 +489,17 @@ footer{margin-top:26px; text-align:center; color:var(--text-dim); font-size:.78r
         '<td><span class="pill ' + sponsorPillClass(j.sponsorship) + '">' + escapeHtml(j.sponsorship||"Unknown") + '</span></td>' +
         '<td><span class="pill ' + sponsorPillClass(j.h1bHistory) + '" title="' + escapeHtml(j.h1bDetail||"") + '">' + escapeHtml(j.h1bHistory||"Unknown") + '</span></td>' +
         '<td class="req-cell">' + escapeHtml(j.requirements||"—") + '</td>' +
+        '<td class="docs-progress mono' + (docsComplete ? ' complete' : '') + '">' + docsLabel + '</td>' +
         '<td class="deadline mono' + (soon ? ' soon' : '') + '">' + fmtDate(j.deadline) + '</td>' +
         '<td></td>' +
         '<td><div class="row-actions">' +
           '<button class="icon-btn edit-btn" title="Edit">✎</button>' +
         '</div></td>';
 
-      var statusTd = tr.children[7];
+      var statusTd = tr.children[8];
       var sel = document.createElement("select");
       sel.className = "status-select";
-      ["New","Interested","Applied","Interview","Offer","Rejected","Withdrawn"].forEach(function(s){
+      STATUSES.forEach(function(s){
         var o = document.createElement("option"); o.textContent = s; if((j.status||"New")===s) o.selected = true; sel.appendChild(o);
       });
       sel.addEventListener("change", function(){ updateJob(j.id, {status: sel.value}); });
@@ -434,6 +510,7 @@ footer{margin-top:26px; text-align:center; color:var(--text-dim); font-size:.78r
     });
 
     renderStats();
+    renderSummary();
   }
 
   function renderStats(){
@@ -457,6 +534,44 @@ footer{margin-top:26px; text-align:center; color:var(--text-dim); font-size:.78r
     }).join("");
   }
 
+  function summaryPanelHtml(title, rows){
+    var max = Math.max.apply(null, rows.map(function(r){ return r.n; }).concat([1]));
+    var body = rows.filter(function(r){ return r.n > 0; }).map(function(r){
+      var pct = Math.round((r.n / max) * 100);
+      return '<div class="summary-row">' +
+        '<span class="s-label">' + escapeHtml(r.label) + '</span>' +
+        '<span class="s-track"><span class="s-fill' + (r.cls ? ' ' + r.cls : '') + '" style="width:' + pct + '%"></span></span>' +
+        '<span class="s-count mono">' + r.n + '</span>' +
+      '</div>';
+    }).join("");
+    return '<div class="summary-panel"><h3>' + escapeHtml(title) + '</h3>' + (body || '<div class="summary-row"><span class="s-label" style="flex:1;color:var(--text-dim)">No data yet</span></div>') + '</div>';
+  }
+
+  function renderSummary(){
+    var all = Object.keys(jobs).map(function(id){ return jobs[id]; });
+
+    var bySite = SITES.filter(function(s){ return s !== "Other"; }).concat(["Other"]).map(function(s){
+      return {label: s, n: all.filter(function(j){ return (j.site||"Other") === s; }).length};
+    });
+    var byType = POSITION_TYPES.map(function(t){
+      return {label: t, n: all.filter(function(j){ return (j.positionType||"Other") === t; }).length};
+    });
+    var byStatus = STATUSES.map(function(s){
+      return {label: s, n: all.filter(function(j){ return (j.status||"New") === s; }).length};
+    });
+    var byH1b = [
+      {label: "Yes", n: all.filter(function(j){ return j.h1bHistory === "Yes"; }).length, cls: "good"},
+      {label: "No", n: all.filter(function(j){ return j.h1bHistory === "No"; }).length, cls: "bad"},
+      {label: "Unknown", n: all.filter(function(j){ return (j.h1bHistory||"Unknown") === "Unknown"; }).length, cls: "unknown"}
+    ];
+
+    summaryEl.innerHTML =
+      summaryPanelHtml("By site", bySite) +
+      summaryPanelHtml("By position type", byType) +
+      summaryPanelHtml("By status", byStatus) +
+      summaryPanelHtml("By H-1B filing history", byH1b);
+  }
+
   function updateJob(id, patch){
     Object.assign(jobs[id], patch);
     persist();
@@ -471,6 +586,76 @@ footer{margin-top:26px; text-align:center; color:var(--text-dim); font-size:.78r
   var editingId = null;
 
   function fieldEl(name){ return document.getElementById("f_" + name); }
+
+  // ---- documents checklist (within the modal) ----
+  var modalDocs = [];
+  var docPresetsEl = document.getElementById("docPresets");
+  var docListEl = document.getElementById("docList");
+  var docCustomInput = document.getElementById("docCustomInput");
+
+  function renderDocPresets(){
+    docPresetsEl.innerHTML = "";
+    DOC_PRESETS.forEach(function(name){
+      var present = modalDocs.some(function(d){ return d.name === name; });
+      var chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "chip";
+      chip.textContent = name;
+      chip.setAttribute("aria-pressed", present ? "true" : "false");
+      chip.addEventListener("click", function(){
+        if(present){
+          modalDocs = modalDocs.filter(function(d){ return d.name !== name; });
+        } else {
+          modalDocs.push({name: name, done: false});
+        }
+        renderDocPresets();
+        renderDocList();
+      });
+      docPresetsEl.appendChild(chip);
+    });
+  }
+
+  function renderDocList(){
+    docListEl.innerHTML = "";
+    modalDocs.forEach(function(doc, idx){
+      var row = document.createElement("div");
+      row.className = "doc-row";
+      var cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.checked = !!doc.done;
+      cb.addEventListener("change", function(){ modalDocs[idx].done = cb.checked; renderDocList(); });
+      var name = document.createElement("span");
+      name.className = "doc-name" + (doc.done ? " done" : "");
+      name.textContent = doc.name;
+      var rm = document.createElement("button");
+      rm.type = "button";
+      rm.className = "doc-remove";
+      rm.title = "Remove";
+      rm.textContent = "✕";
+      rm.addEventListener("click", function(){
+        modalDocs.splice(idx, 1);
+        renderDocPresets();
+        renderDocList();
+      });
+      row.appendChild(cb); row.appendChild(name); row.appendChild(rm);
+      docListEl.appendChild(row);
+    });
+  }
+
+  document.getElementById("docAddBtn").addEventListener("click", function(){
+    var name = docCustomInput.value.trim();
+    if(!name) return;
+    if(!modalDocs.some(function(d){ return d.name.toLowerCase() === name.toLowerCase(); })){
+      modalDocs.push({name: name, done: false});
+      renderDocPresets();
+      renderDocList();
+    }
+    docCustomInput.value = "";
+    docCustomInput.focus();
+  });
+  docCustomInput.addEventListener("keydown", function(e){
+    if(e.key === "Enter"){ e.preventDefault(); document.getElementById("docAddBtn").click(); }
+  });
 
   function openModal(id){
     editingId = id || null;
@@ -491,10 +676,14 @@ footer{margin-top:26px; text-align:center; color:var(--text-dim); font-size:.78r
       fieldEl("url").value = j.url||"";
       fieldEl("requirements").value = j.requirements||"";
       fieldEl("notes").value = j.notes||"";
+      modalDocs = (j.documents || []).map(function(d){ return {name: d.name, done: !!d.done}; });
     } else {
       modalTitle.textContent = "Add posting";
       deleteBtn.style.display = "none";
+      modalDocs = [];
     }
+    renderDocPresets();
+    renderDocList();
     backdrop.hidden = false;
     fieldEl("title").focus();
   }
@@ -527,7 +716,8 @@ footer{margin-top:26px; text-align:center; color:var(--text-dim); font-size:.78r
       dateApplied: fieldEl("dateapplied").value,
       url: fieldEl("url").value.trim(),
       requirements: fieldEl("requirements").value.trim(),
-      notes: fieldEl("notes").value.trim()
+      notes: fieldEl("notes").value.trim(),
+      documents: modalDocs.map(function(d){ return {name: d.name, done: !!d.done}; })
     };
     if(editingId){
       data.dateFound = jobs[editingId].dateFound || new Date().toISOString().slice(0,10);

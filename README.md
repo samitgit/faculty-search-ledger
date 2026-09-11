@@ -1,6 +1,6 @@
 # Faculty Search Ledger
 
-A personal tracker for faculty, postdoc, and tenure-track openings in mathematics, statistics, and data science — sourced from MathJobs, AcademicJobsOnline, AMSTAT Career Connect, INFORMS Career Center, HigherEdJobs, the Chronicle of Higher Education, SIAM Career Center, and ACM's job board.
+A personal tracker for faculty, visiting, postdoc, and tenure-track openings in mathematics, statistics, and data science — sourced from MathJobs, AcademicJobsOnline, AMSTAT Career Connect, INFORMS Career Center, HigherEdJobs, the Chronicle of Higher Education, SIAM Career Center, ACM's job board, Nature Careers, and AcademicPositions.
 
 This is a plain static web page: just `index.html` and `jobs.json` side by side, no subfolders, no build step, no server framework. It runs entirely client-side and saves your edits in the browser's local storage; `jobs.json` is the portable snapshot you commit to git.
 
@@ -67,6 +67,14 @@ Note that on GitHub Pages, everyone with the link can view it (unless the repo i
 
 This local copy has no way to search the web itself. The version of this tracker published as a Claude artifact *does* — you can ask Claude in a chat to check the job sites and it writes new postings directly into that live page. To bring fresh postings into this git copy, ask Claude for the current list (or the updated `jobs.json`) and swap it into `jobs.json` as above.
 
+## Summary breakdown
+
+Above the toolbar, a collapsible **Summary breakdown** panel shows bar-chart tallies of your ledger by site, position type, status, and H-1B filing history — useful for seeing at a glance where most of your leads are coming from, or how many are still `New` vs. `Applied`. Click the toggle to collapse it out of the way.
+
+## Document checklist per job
+
+Each posting has a **Required documents** checklist. Open a row (✎) to pick from common presets (CV/Resume, Cover Letter, Research Statement, Teaching Statement, Diversity Statement, Reference Letters, Transcripts, Writing Sample) or add your own, then check items off as you prepare them. The table's **Docs** column shows progress (e.g. `3/5`) and turns green when a posting's full checklist is complete.
+
 ## Data model
 
 Each entry in `jobs.json` is an object:
@@ -79,21 +87,28 @@ Each entry in `jobs.json` is an object:
   "site": "MathJobs",
   "positionType": "Tenure-Track",
   "sponsorship": "Unknown",
+  "h1bHistory": "Yes",
+  "h1bDetail": "Large public research university; well-documented, active H-1B filer for faculty roles per public LCA disclosure data.",
   "status": "New",
   "deadline": "2026-11-02",
   "dateApplied": "",
   "url": "https://www.mathjobs.org/jobs/MIZZOU/TT",
   "requirements": "PhD in Mathematics or related field by time of appointment…",
   "notes": "",
+  "documents": [
+    { "name": "CV/Resume", "done": true },
+    { "name": "Reference Letters (3)", "done": false }
+  ],
   "dateFound": "2026-09-11"
 }
 ```
 
-- `site`: one of MathJobs, AcademicJobsOnline, AMSTAT, INFORMS, HigherEdJobs, Chronicle, SIAM, ACM, Other
+- `site`: one of MathJobs, AcademicJobsOnline, AMSTAT, INFORMS, HigherEdJobs, Chronicle, SIAM, ACM, Nature Careers, AcademicPositions, Other
 - `positionType`: Tenure-Track, Faculty, Visiting, Postdoc, Other
 - `sponsorship`: Yes, No, Unknown — whether *this specific posting* states visa/work-authorization sponsorship (most don't say)
 - `h1bHistory` / `h1bDetail`: Yes, No, Unknown — whether the *hiring institution* has a public history of filing H-1B petitions (via Dept. of Labor LCA disclosure data, e.g. myvisajobs.com), with a short note on what was found. This is a much more reliable signal than `sponsorship`, since most job ads don't mention visa policy at all but an institution's filing history is public record.
 - `status`: New, Interested, Applied, Interview, Offer, Rejected, Withdrawn
+- `documents`: array of `{name, done}` — the required-application-materials checklist for that posting; optional, defaults to empty
 
 ## License
 

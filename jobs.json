@@ -14,6 +14,7 @@
     "url": "https://www.mathjobs.org/jobs/MIZZOU/TT",
     "requirements": "PhD in Mathematics or related field by time of appointment (Aug 15, 2027). Apply via eRecruit (Job Opening ID 60585); reference letters via MathJobs.",
     "notes": "",
+    "documents": [],
     "dateFound": "2026-09-11"
   },
   {
@@ -30,7 +31,8 @@
     "dateApplied": "",
     "url": "https://www.mathjobs.org/jobs/HarvardStats/POSTDOC",
     "requirements": "PhD in Statistics, Mathematics, Computer Science, or related field. Two-year appointment, start negotiable July–Aug 2026. Salary $67,600–$71,000.",
-    "notes": "Listed deadline (Mar 6, 2026) has passed, but the posting states it 'remains open until filled' — worth confirming directly before applying.",
+    "notes": "Listed deadline (Mar 6, 2026) has passed, but the posting states it 'remains open until filled' — worth confirming directly before applying, since several other postings found in today's check turned out to be fully closed.",
+    "documents": [],
     "dateFound": "2026-09-11"
   },
   {
@@ -48,6 +50,7 @@
     "url": "https://academicjobsonline.org/ajo/jobs/32632",
     "requirements": "See posting for full requirements and deadline.",
     "notes": "",
+    "documents": [],
     "dateFound": "2026-09-11"
   },
   {
@@ -65,6 +68,7 @@
     "url": "https://academicjobsonline.org/ajo/jobs/32525",
     "requirements": "See posting for full requirements and deadline.",
     "notes": "",
+    "documents": [],
     "dateFound": "2026-09-11"
   },
   {
@@ -82,6 +86,7 @@
     "url": "https://academicjobsonline.org/ajo/jobs/32663",
     "requirements": "See posting for full requirements and deadline.",
     "notes": "",
+    "documents": [],
     "dateFound": "2026-09-11"
   },
   {
@@ -99,6 +104,7 @@
     "url": "https://academicjobsonline.org/ajo/jobs/32656",
     "requirements": "See posting for full requirements and deadline.",
     "notes": "Biomedical Data Science — adjacent to core data science; keep or drop depending on how broadly you want DS roles interpreted.",
+    "documents": [],
     "dateFound": "2026-09-11"
   },
   {
@@ -116,6 +122,7 @@
     "url": "https://careerconnect.amstat.org/job/233837/tenure-track-professor-in-statistics-harvard/",
     "requirements": "Full text blocked automated reading (site bot-protection) — open the posting to confirm exact requirements, deadline, and sponsorship language.",
     "notes": "",
+    "documents": [],
     "dateFound": "2026-09-11"
   },
   {
@@ -133,6 +140,7 @@
     "url": "https://careerconnect.amstat.org/job/211294/assistant-professor-of-statistics/",
     "requirements": "Full text blocked automated reading (site bot-protection) — open the posting to confirm exact requirements, deadline, and sponsorship language.",
     "notes": "",
+    "documents": [],
     "dateFound": "2026-09-11"
   },
   {
@@ -150,6 +158,7 @@
     "url": "https://careercenter.informs.org/job/tenure-track-assistant-professor-of-data-science-san-diego-california-5435",
     "requirements": "Doctorate required. Teaching/research in data science, statistics, and/or applied AI. Start date ~Aug 2027 (contingent on state funding). Salary range $148,000–$158,000. Apply via external PageUp portal linked from the posting.",
     "notes": "",
+    "documents": [],
     "dateFound": "2026-09-11"
   },
   {
@@ -167,6 +176,7 @@
     "url": "https://www.higheredjobs.com/faculty/details.cfm?JobCode=179219107",
     "requirements": "Full text blocked automated reading (site bot-protection) — open the posting to confirm exact requirements, deadline, and sponsorship language.",
     "notes": "Also cross-listed on the Chronicle (see that entry).",
+    "documents": [],
     "dateFound": "2026-09-11"
   },
   {
@@ -184,6 +194,7 @@
     "url": "https://jobs.chronicle.com/job/38034756/mathematics-and-statistics-faculty/",
     "requirements": "See posting for full requirements and deadline.",
     "notes": "",
+    "documents": [],
     "dateFound": "2026-09-11"
   },
   {
@@ -201,6 +212,7 @@
     "url": "https://jobs.chronicle.com/job/38033848/tenured-tenure-track-faculty-position-in-mathematical-artificial-intelligence/",
     "requirements": "See posting for full requirements and deadline.",
     "notes": "",
+    "documents": [],
     "dateFound": "2026-09-11"
   },
   {
@@ -218,6 +230,7 @@
     "url": "https://jobs.chronicle.com/job/38033271/two-tenure-track-faculty-positions-in-mathematics/",
     "requirements": "See posting for full requirements and deadline.",
     "notes": "",
+    "documents": [],
     "dateFound": "2026-09-11"
   },
   {
@@ -235,6 +248,7 @@
     "url": "https://jobs.chronicle.com/job/38032932/assistant-professor-mathematical-sciences/",
     "requirements": "See posting for full requirements and deadline.",
     "notes": "",
+    "documents": [],
     "dateFound": "2026-09-11"
   },
   {
@@ -252,6 +266,7 @@
     "url": "https://jobs.chronicle.com/job/38034144/assistant-professor-of-data-science/",
     "requirements": "See posting for full requirements and deadline.",
     "notes": "",
+    "documents": [],
     "dateFound": "2026-09-11"
   },
   {
@@ -269,6 +284,7 @@
     "url": "https://jobs.siam.org/job/assistant-professor-mathematics/80579781/",
     "requirements": "See posting for full requirements and deadline.",
     "notes": "Institution confirmed via cross-reference (also listed on MathJobs as USD/APM).",
+    "documents": [],
     "dateFound": "2026-09-11"
   },
   {
@@ -286,6 +302,7 @@
     "url": "https://jobs.siam.org/job/assistant-professor-in-applied-mathematics/80295095/",
     "requirements": "See posting for full requirements and deadline. Institution inferred from location match — verify.",
     "notes": "",
+    "documents": [],
     "dateFound": "2026-09-11"
   },
   {
@@ -303,6 +320,61 @@
     "url": "https://jobs.siam.org/job/assistant-professor-computational-and-applied-mathematics/80406991/",
     "requirements": "See posting for full requirements and deadline.",
     "notes": "",
+    "documents": [],
+    "dateFound": "2026-09-11"
+  },
+  {
+    "id": "nature-umich-ds",
+    "title": "Tenure Track Assistant/Associate Professor Positions in Data Science",
+    "institution": "University of Michigan",
+    "site": "Nature Careers",
+    "positionType": "Tenure-Track",
+    "sponsorship": "Unknown",
+    "h1bHistory": "Yes",
+    "h1bDetail": "Large public research university; consistently active H-1B filer per public LCA disclosure data.",
+    "status": "New",
+    "deadline": "",
+    "dateApplied": "",
+    "url": "https://www.nature.com/naturecareers/job/tenure-track-assistantassociate-professor-positions-in-data-science-university-of-michigan-um-743046",
+    "requirements": "See posting for full requirements and deadline (page did not load for automated reading in this pass).",
+    "notes": "",
+    "documents": [],
+    "dateFound": "2026-09-11"
+  },
+  {
+    "id": "nature-northwestern-appliedmath",
+    "title": "Faculty Position in Applied Mathematics",
+    "institution": "Northwestern University, Engineering Sciences and Applied Mathematics",
+    "site": "Nature Careers",
+    "positionType": "Faculty",
+    "sponsorship": "Unknown",
+    "h1bHistory": "Yes",
+    "h1bDetail": "Major private research university; consistently active H-1B filer per public LCA disclosure data.",
+    "status": "New",
+    "deadline": "",
+    "dateApplied": "",
+    "url": "https://www.nature.com/naturecareers/job/12863104/faculty-position-in-applied-mathematics/",
+    "requirements": "PhD required; interdisciplinary research and university-level teaching. See posting for full requirements and deadline.",
+    "notes": "",
+    "documents": [],
+    "dateFound": "2026-09-11"
+  },
+  {
+    "id": "nature-cshl-bioai",
+    "title": "Faculty Position in BioAI",
+    "institution": "Cold Spring Harbor Laboratory",
+    "site": "Nature Careers",
+    "positionType": "Faculty",
+    "sponsorship": "Unknown",
+    "h1bHistory": "Yes",
+    "h1bDetail": "Confirmed via myvisajobs.com: 20-36 LCAs/year filed 2017-2026, all certified in FY2025; commonly sponsors postdocs and computational scientists.",
+    "status": "New",
+    "deadline": "",
+    "dateApplied": "",
+    "url": "https://www.nature.com/naturecareers/job/12862578/faculty-position-in-bioai-at-cold-spring-harbor-laboratory/",
+    "requirements": "Junior faculty position at the interface of biology and artificial intelligence/data science. See posting for full requirements and deadline.",
+    "notes": "Biology/AI research institute rather than a traditional math/stat department — included as data-science-adjacent, similar to the Stanford Biomedical Data Science listing; drop if too far afield.",
+    "documents": [],
     "dateFound": "2026-09-11"
   }
 ]
