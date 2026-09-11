@@ -169,6 +169,16 @@ footer{margin-top:26px; text-align:center; color:var(--text-dim); font-size:.78r
 .summary-row .s-fill.unknown{background:var(--unknown);}
 .summary-row .s-count{flex:0 0 20px; text-align:right; font-size:.78rem; color:var(--text-dim);}
 
+/* site bar chart (distinct chart treatment for "By site") */
+.summary-panel.chart-panel{grid-column:span 2;}
+.chart-panel .s-track{position:relative;}
+.chart-panel .s-track::after{content:""; position:absolute; left:50%; top:-1px; bottom:-1px; width:1px; background:var(--border);}
+.chart-panel .summary-row .s-fill{background:var(--brass);}
+.chart-axis{display:flex; justify-content:space-between; padding-left:116px; margin-top:6px; font-size:.68rem; color:var(--text-dim);}
+@media (max-width:640px){
+  .summary-panel.chart-panel{grid-column:span 1;}
+}
+
 /* documents checklist */
 .docs-progress{font-size:.78rem; color:var(--text-dim); white-space:nowrap;}
 .docs-progress.complete{color:var(--good); font-weight:600;}
@@ -193,7 +203,7 @@ footer{margin-top:26px; text-align:center; color:var(--text-dim); font-size:.78r
   <header>
     <div class="title-block">
       <h1>Faculty Search Ledger</h1>
-      <div class="sub">Math · statistics · data science faculty, visiting, postdoc &amp; tenure-track openings across MathJobs, AJO, AMSTAT, INFORMS, HigherEdJobs, Chronicle, SIAM, ACM, Nature Careers &amp; AcademicPositions — your local copy.</div>
+      <div class="sub">Math · statistics · data science faculty, visiting, postdoc &amp; tenure-track openings across 13 job boards, including teaching-focused positions — your local copy.</div>
     </div>
     <div class="header-actions">
       <button class="btn btn-ghost" id="exportBtn" title="Download current data as data/jobs.json">⭳ Export JSON</button>
@@ -268,7 +278,7 @@ footer{margin-top:26px; text-align:center; color:var(--text-dim); font-size:.78r
     <div class="empty" id="emptyState" hidden>No postings match these filters. Add one, or import a jobs.json.</div>
   </div>
 
-  <div class="hint">This is your local, git-tracked copy: everything you add or change is saved to this browser's storage automatically. To version it, click <strong>Export JSON</strong> and overwrite <code>jobs.json</code> before you commit — that file is the portable source of truth this ledger reads on first load. There's no live web search from this page; ask Claude in a chat to check the job sites and hand you an updated jobs.json when you want fresh postings. <strong>Sponsorship</strong> reflects what the individual posting states (often unstated); <strong>H-1B filer</strong> is whether the *institution* has a public history of filing H-1B petitions — a more reliable signal. <strong>Docs</strong> tracks which application materials you've prepared per posting — open a row to check them off.</div>
+  <div class="hint">This is your local, git-tracked copy: everything you add or change is saved to this browser's storage automatically. To version it, click <strong>Export JSON</strong> and overwrite <code>jobs.json</code> before you commit — that file is the portable source of truth this ledger reads on first load. There's no live web search from this page; ask Claude in a chat to check the job sites (now including IMS, MAA, HERC, and teaching-focused positions) and hand you an updated jobs.json when you want fresh postings. <strong>Sponsorship</strong> reflects what the individual posting states (often unstated); <strong>H-1B filer</strong> is whether the *institution* has a public history of filing H-1B petitions — a more reliable signal. <strong>Docs</strong> tracks which application materials you've prepared per posting — open a row to check them off.</div>
 
   <footer>Personal use only.</footer>
 </div>
@@ -299,6 +309,9 @@ footer{margin-top:26px; text-align:center; color:var(--text-dim); font-size:.78r
             <option>ACM</option>
             <option>Nature Careers</option>
             <option>AcademicPositions</option>
+            <option>IMS</option>
+            <option>MAA</option>
+            <option>HERC</option>
             <option>Other</option>
           </select>
         </div>
@@ -383,7 +396,7 @@ footer{margin-top:26px; text-align:center; color:var(--text-dim); font-size:.78r
 (function(){
   "use strict";
   var STORAGE_KEY = "facultyLedgerJobs";
-  var SITES = ["MathJobs","AcademicJobsOnline","AMSTAT","INFORMS","HigherEdJobs","Chronicle","SIAM","ACM","Nature Careers","AcademicPositions","Other"];
+  var SITES = ["MathJobs","AcademicJobsOnline","AMSTAT","INFORMS","HigherEdJobs","Chronicle","SIAM","ACM","Nature Careers","AcademicPositions","IMS","MAA","HERC","Other"];
   var POSITION_TYPES = ["Tenure-Track","Faculty","Visiting","Postdoc","Other"];
   var STATUSES = ["New","Interested","Applied","Interview","Offer","Rejected","Withdrawn"];
   var DOC_PRESETS = ["CV/Resume","Cover Letter","Research Statement","Teaching Statement","Diversity Statement","Reference Letters (3)","Transcripts","Writing Sample"];
@@ -547,6 +560,21 @@ footer{margin-top:26px; text-align:center; color:var(--text-dim); font-size:.78r
     return '<div class="summary-panel"><h3>' + escapeHtml(title) + '</h3>' + (body || '<div class="summary-row"><span class="s-label" style="flex:1;color:var(--text-dim)">No data yet</span></div>') + '</div>';
   }
 
+  function siteChartPanelHtml(title, rows){
+    var sorted = rows.filter(function(r){ return r.n > 0; }).sort(function(a,b){ return b.n - a.n; });
+    var max = Math.max.apply(null, sorted.map(function(r){ return r.n; }).concat([1]));
+    var body = sorted.map(function(r){
+      var pct = Math.round((r.n / max) * 100);
+      return '<div class="summary-row">' +
+        '<span class="s-label" title="' + escapeHtml(r.label) + '">' + escapeHtml(r.label) + '</span>' +
+        '<span class="s-track"><span class="s-fill" style="width:' + pct + '%"></span></span>' +
+        '<span class="s-count mono">' + r.n + '</span>' +
+      '</div>';
+    }).join("");
+    var axis = '<div class="chart-axis"><span>0</span><span>' + max + '</span></div>';
+    return '<div class="summary-panel chart-panel"><h3>' + escapeHtml(title) + '</h3>' + (body ? body + axis : '<div class="summary-row"><span class="s-label" style="flex:1;color:var(--text-dim)">No data yet</span></div>') + '</div>';
+  }
+
   function renderSummary(){
     var all = Object.keys(jobs).map(function(id){ return jobs[id]; });
 
@@ -564,12 +592,18 @@ footer{margin-top:26px; text-align:center; color:var(--text-dim); font-size:.78r
       {label: "No", n: all.filter(function(j){ return j.h1bHistory === "No"; }).length, cls: "bad"},
       {label: "Unknown", n: all.filter(function(j){ return (j.h1bHistory||"Unknown") === "Unknown"; }).length, cls: "unknown"}
     ];
+    var funnel = [
+      {label: "Applied", n: all.filter(function(j){ return j.status === "Applied"; }).length},
+      {label: "Interviewing", n: all.filter(function(j){ return j.status === "Interview"; }).length, cls: "good"},
+      {label: "Rejected", n: all.filter(function(j){ return j.status === "Rejected"; }).length, cls: "bad"}
+    ];
 
     summaryEl.innerHTML =
-      summaryPanelHtml("By site", bySite) +
+      siteChartPanelHtml("By site", bySite) +
       summaryPanelHtml("By position type", byType) +
       summaryPanelHtml("By status", byStatus) +
-      summaryPanelHtml("By H-1B filing history", byH1b);
+      summaryPanelHtml("By H-1B filing history", byH1b) +
+      summaryPanelHtml("Applied · Interviewing · Rejected", funnel);
   }
 
   function updateJob(id, patch){

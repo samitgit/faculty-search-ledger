@@ -1,6 +1,6 @@
 # Faculty Search Ledger
 
-A personal tracker for faculty, visiting, postdoc, and tenure-track openings in mathematics, statistics, and data science — sourced from MathJobs, AcademicJobsOnline, AMSTAT Career Connect, INFORMS Career Center, HigherEdJobs, the Chronicle of Higher Education, SIAM Career Center, ACM's job board, Nature Careers, and AcademicPositions.
+A personal tracker for faculty, visiting, postdoc, and tenure-track openings — including teaching-focused faculty positions — in mathematics, statistics, and data science, sourced from 13 job boards: MathJobs, AcademicJobsOnline, AMSTAT Career Connect, INFORMS Career Center, HigherEdJobs, the Chronicle of Higher Education, SIAM Career Center, ACM's job board, Nature Careers, AcademicPositions, IMS Jobs (Institute of Mathematical Statistics), MAA's job board (mathclassifieds.org), and HERC (Higher Education Recruitment Consortium).
 
 This is a plain static web page: just `index.html` and `jobs.json` side by side, no subfolders, no build step, no server framework. It runs entirely client-side and saves your edits in the browser's local storage; `jobs.json` is the portable snapshot you commit to git.
 
@@ -69,7 +69,7 @@ This local copy has no way to search the web itself. The version of this tracker
 
 ## Summary breakdown
 
-Above the toolbar, a collapsible **Summary breakdown** panel shows bar-chart tallies of your ledger by site, position type, status, and H-1B filing history — useful for seeing at a glance where most of your leads are coming from, or how many are still `New` vs. `Applied`. Click the toggle to collapse it out of the way.
+Above the toolbar, a collapsible **Summary breakdown** panel shows bar-chart tallies of your ledger across five views: a wide **By site** bar chart (sorted highest to lowest, with a 0–max axis), plus By position type, By status, By H-1B filing history, and a dedicated **Applied · Interviewing · Rejected** funnel — useful for seeing at a glance where most of your leads are coming from, or how far along your active applications are. Click the toggle to collapse it out of the way.
 
 ## Document checklist per job
 
@@ -103,7 +103,7 @@ Each entry in `jobs.json` is an object:
 }
 ```
 
-- `site`: one of MathJobs, AcademicJobsOnline, AMSTAT, INFORMS, HigherEdJobs, Chronicle, SIAM, ACM, Nature Careers, AcademicPositions, Other
+- `site`: one of MathJobs, AcademicJobsOnline, AMSTAT, INFORMS, HigherEdJobs, Chronicle, SIAM, ACM, Nature Careers, AcademicPositions, IMS, MAA, HERC, Other
 - `positionType`: Tenure-Track, Faculty, Visiting, Postdoc, Other
 - `sponsorship`: Yes, No, Unknown — whether *this specific posting* states visa/work-authorization sponsorship (most don't say)
 - `h1bHistory` / `h1bDetail`: Yes, No, Unknown — whether the *hiring institution* has a public history of filing H-1B petitions (via Dept. of Labor LCA disclosure data, e.g. myvisajobs.com), with a short note on what was found. This is a much more reliable signal than `sponsorship`, since most job ads don't mention visa policy at all but an institution's filing history is public record.
