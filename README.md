@@ -90,8 +90,9 @@ Each entry in `jobs.json` is an object:
 ```
 
 - `site`: one of MathJobs, AcademicJobsOnline, AMSTAT, INFORMS, HigherEdJobs, Chronicle, SIAM, ACM, Other
-- `positionType`: Tenure-Track, Faculty, Postdoc, Other
-- `sponsorship`: Yes, No, Unknown — whether the posting indicates visa/work-authorization sponsorship
+- `positionType`: Tenure-Track, Faculty, Visiting, Postdoc, Other
+- `sponsorship`: Yes, No, Unknown — whether *this specific posting* states visa/work-authorization sponsorship (most don't say)
+- `h1bHistory` / `h1bDetail`: Yes, No, Unknown — whether the *hiring institution* has a public history of filing H-1B petitions (via Dept. of Labor LCA disclosure data, e.g. myvisajobs.com), with a short note on what was found. This is a much more reliable signal than `sponsorship`, since most job ads don't mention visa policy at all but an institution's filing history is public record.
 - `status`: New, Interested, Applied, Interview, Offer, Rejected, Withdrawn
 
 ## License

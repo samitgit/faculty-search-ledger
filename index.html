@@ -88,7 +88,7 @@ select{
 }
 .count-pill{margin-left:auto; font-size:.8rem; color:var(--text-dim); white-space:nowrap;}
 .table-scroll{overflow-x:auto; border:1px solid var(--border); border-radius:10px; background:var(--surface); box-shadow:var(--shadow);}
-table{border-collapse:collapse; width:100%; min-width:920px;}
+table{border-collapse:collapse; width:100%; min-width:1040px;}
 thead th{
   text-align:left; font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; color:var(--text-dim);
   padding:11px 12px; border-bottom:1px solid var(--border); background:var(--surface-2); white-space:nowrap;
@@ -150,7 +150,7 @@ footer{margin-top:26px; text-align:center; color:var(--text-dim); font-size:.78r
   <header>
     <div class="title-block">
       <h1>Faculty Search Ledger</h1>
-      <div class="sub">Math · statistics · data science faculty, postdoc &amp; tenure-track openings — your local copy.</div>
+      <div class="sub">Math · statistics · data science faculty, visiting, postdoc &amp; tenure-track openings — your local copy.</div>
     </div>
     <div class="header-actions">
       <button class="btn btn-ghost" id="exportBtn" title="Download current data as data/jobs.json">⭳ Export JSON</button>
@@ -170,11 +170,18 @@ footer{margin-top:26px; text-align:center; color:var(--text-dim); font-size:.78r
       <option value="">All position types</option>
       <option>Tenure-Track</option>
       <option>Faculty</option>
+      <option>Visiting</option>
       <option>Postdoc</option>
       <option>Other</option>
     </select>
     <select id="sponsorFilter">
-      <option value="">Sponsorship: any</option>
+      <option value="">Posting states sponsorship: any</option>
+      <option>Yes</option>
+      <option>No</option>
+      <option>Unknown</option>
+    </select>
+    <select id="h1bFilter">
+      <option value="">H-1B filing history: any</option>
       <option>Yes</option>
       <option>No</option>
       <option>Unknown</option>
@@ -200,6 +207,7 @@ footer{margin-top:26px; text-align:center; color:var(--text-dim); font-size:.78r
           <th>Site</th>
           <th>Type</th>
           <th>Sponsorship</th>
+          <th>H-1B filer</th>
           <th>Requirements</th>
           <th>Deadline</th>
           <th>Status</th>
@@ -248,13 +256,22 @@ footer{margin-top:26px; text-align:center; color:var(--text-dim); font-size:.78r
           <select id="f_type">
             <option>Tenure-Track</option>
             <option>Faculty</option>
+            <option>Visiting</option>
             <option>Postdoc</option>
             <option>Other</option>
           </select>
         </div>
         <div class="field">
-          <label for="f_sponsor">Visa sponsorship</label>
+          <label for="f_sponsor">Posting states sponsorship</label>
           <select id="f_sponsor">
+            <option>Unknown</option>
+            <option>Yes</option>
+            <option>No</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="f_h1b">Institution H-1B filer</label>
+          <select id="f_h1b">
             <option>Unknown</option>
             <option>Yes</option>
             <option>No</option>
@@ -322,9 +339,10 @@ footer{margin-top:26px; text-align:center; color:var(--text-dim); font-size:.78r
   var searchInput = document.getElementById("searchInput");
   var typeFilter = document.getElementById("typeFilter");
   var sponsorFilter = document.getElementById("sponsorFilter");
+  var h1bFilter = document.getElementById("h1bFilter");
   var statusFilter = document.getElementById("statusFilter");
 
-  [searchInput, siteFilterEl, typeFilter, sponsorFilter, statusFilter].forEach(function(el){
+  [searchInput, siteFilterEl, typeFilter, sponsorFilter, h1bFilter, statusFilter].forEach(function(el){
     el.addEventListener("input", render);
     el.addEventListener("change", render);
   });
@@ -359,13 +377,14 @@ footer{margin-top:26px; text-align:center; color:var(--text-dim); font-size:.78r
 
   function render(){
     var q = searchInput.value.trim().toLowerCase();
-    var site = siteFilterEl.value, type = typeFilter.value, sponsor = sponsorFilter.value, status = statusFilter.value;
+    var site = siteFilterEl.value, type = typeFilter.value, sponsor = sponsorFilter.value, h1b = h1bFilter.value, status = statusFilter.value;
 
     var list = Object.keys(jobs).map(function(id){ return Object.assign({id:id}, jobs[id]); });
     list = list.filter(function(j){
       if(site && j.site !== site) return false;
       if(type && j.positionType !== type) return false;
       if(sponsor && (j.sponsorship||"Unknown") !== sponsor) return false;
+      if(h1b && (j.h1bHistory||"Unknown") !== h1b) return false;
       if(status && (j.status||"New") !== status) return false;
       if(q){
         var hay = [j.title, j.institution, j.notes, j.requirements].join(" ").toLowerCase();
@@ -393,6 +412,7 @@ footer{margin-top:26px; text-align:center; color:var(--text-dim); font-size:.78r
         '<td><span class="site-tag">' + escapeHtml(j.site||"Other") + '</span></td>' +
         '<td>' + escapeHtml(j.positionType||"Other") + '</td>' +
         '<td><span class="pill ' + sponsorPillClass(j.sponsorship) + '">' + escapeHtml(j.sponsorship||"Unknown") + '</span></td>' +
+        '<td><span class="pill ' + sponsorPillClass(j.h1bHistory) + '" title="' + escapeHtml(j.h1bDetail||"") + '">' + escapeHtml(j.h1bHistory||"Unknown") + '</span></td>' +
         '<td class="req-cell">' + escapeHtml(j.requirements||"—") + '</td>' +
         '<td class="deadline mono' + (soon ? ' soon' : '') + '">' + fmtDate(j.deadline) + '</td>' +
         '<td></td>' +
@@ -400,7 +420,7 @@ footer{margin-top:26px; text-align:center; color:var(--text-dim); font-size:.78r
           '<button class="icon-btn edit-btn" title="Edit">✎</button>' +
         '</div></td>';
 
-      var statusTd = tr.children[6];
+      var statusTd = tr.children[7];
       var sel = document.createElement("select");
       sel.className = "status-select";
       ["New","Interested","Applied","Interview","Offer","Rejected","Withdrawn"].forEach(function(s){
@@ -421,13 +441,15 @@ footer{margin-top:26px; text-align:center; color:var(--text-dim); font-size:.78r
     var total = all.length;
     var applied = all.filter(function(j){ return ["Applied","Interview","Offer"].indexOf(j.status)!==-1; }).length;
     var interview = all.filter(function(j){ return j.status === "Interview"; }).length;
-    var sponsoring = all.filter(function(j){ return j.sponsorship === "Yes"; }).length;
+    var rejected = all.filter(function(j){ return j.status === "Rejected"; }).length;
+    var h1bYes = all.filter(function(j){ return j.h1bHistory === "Yes"; }).length;
     var soonCount = all.filter(function(j){ var d = daysUntil(j.deadline); return d!==null && d>=0 && d<=10; }).length;
     var stats = [
       {n: total, l: "Tracked"},
       {n: applied, l: "Applied"},
       {n: interview, l: "Interviewing"},
-      {n: sponsoring, l: "Sponsoring"},
+      {n: rejected, l: "Rejected"},
+      {n: h1bYes, l: "H-1B filers"},
       {n: soonCount, l: "Due ≤10 days"}
     ];
     statsEl.innerHTML = stats.map(function(s){
@@ -462,6 +484,7 @@ footer{margin-top:26px; text-align:center; color:var(--text-dim); font-size:.78r
       fieldEl("site").value = j.site||"MathJobs";
       fieldEl("type").value = j.positionType||"Tenure-Track";
       fieldEl("sponsor").value = j.sponsorship||"Unknown";
+      fieldEl("h1b").value = j.h1bHistory||"Unknown";
       fieldEl("status").value = j.status||"New";
       fieldEl("deadline").value = j.deadline||"";
       fieldEl("dateapplied").value = j.dateApplied||"";
@@ -498,6 +521,7 @@ footer{margin-top:26px; text-align:center; color:var(--text-dim); font-size:.78r
       site: fieldEl("site").value,
       positionType: fieldEl("type").value,
       sponsorship: fieldEl("sponsor").value,
+      h1bHistory: fieldEl("h1b").value,
       status: fieldEl("status").value,
       deadline: fieldEl("deadline").value,
       dateApplied: fieldEl("dateapplied").value,
