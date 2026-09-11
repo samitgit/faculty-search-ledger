@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Faculty Search Ledger</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --ink:#1e2a44;
+  --ink-2:#334467;
+  --brass:#ab8a4c;
+  --brass-2:#8a6f3a;
+  --bg:#f6f3ec;
+  --surface:#ffffff;
+  --surface-2:#efe9dc;
+  --border:#ddd3bf;
+  --text:#241f14;
+  --text-dim:#6b6252;
+  --good:#3f7d58;
+  --good-bg:#e4efe6;
+  --bad:#af4a34;
+  --bad-bg:#f6e6e1;
+  --unknown:#8a7f68;
+  --unknown-bg:#eee8d9;
+  --shadow: 0 1px 2px rgba(30,42,68,.06), 0 4px 14px rgba(30,42,68,.06);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink:#c7d2e8; --ink-2:#9fb0d6; --brass:#e0b96a; --brass-2:#c79f52;
+    --bg:#14181f; --surface:#1b212b; --surface-2:#212836; --border:#323b4c;
+    --text:#e9e6dc; --text-dim:#9d9689;
+    --good:#6fbf8e; --good-bg:#1c3126; --bad:#e08268; --bad-bg:#3a231e;
+    --unknown:#b3a98f; --unknown-bg:#2c2a20;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 6px 20px rgba(0,0,0,.35);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#c7d2e8; --ink-2:#9fb0d6; --brass:#e0b96a; --brass-2:#c79f52;
+  --bg:#14181f; --surface:#1b212b; --surface-2:#212836; --border:#323b4c;
+  --text:#e9e6dc; --text-dim:#9d9689;
+  --good:#6fbf8e; --good-bg:#1c3126; --bad:#e08268; --bad-bg:#3a231e;
+  --unknown:#b3a98f; --unknown-bg:#2c2a20;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 6px 20px rgba(0,0,0,.35);
+  color-scheme: dark;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:"IBM Plex Sans", system-ui, sans-serif;
+  padding-inline:20px; padding-block:28px 60px;
+}
+h1,h2,h3{font-family:"Fraunces", Georgia, serif; text-wrap:balance; margin:0;}
+.wrap{max-width:1180px; margin:0 auto;}
+.mono{font-family:"IBM Plex Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums;}
+header{display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:22px;}
+.title-block h1{font-size:2rem; font-weight:600; color:var(--ink); letter-spacing:-0.01em;}
+.title-block .sub{color:var(--text-dim); font-size:.92rem; margin-top:4px;}
+.header-actions{display:flex; gap:10px; flex-wrap:wrap;}
+button{font:inherit; cursor:pointer;}
+.btn{
+  border:1px solid var(--border); background:var(--surface); color:var(--text);
+  padding:9px 16px; border-radius:8px; font-size:.88rem; font-weight:500;
+  transition:border-color .15s, background .15s;
+}
+.btn:hover{border-color:var(--brass);}
+.btn-primary{background:var(--ink); color:var(--bg); border-color:var(--ink);}
+.btn-primary:hover{background:var(--ink-2); border-color:var(--ink-2);}
+.btn-ghost{border-color:transparent; background:transparent;}
+.btn-ghost:hover{border-color:var(--border);}
+.stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:10px; margin-bottom:22px;}
+.stat{background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:12px 14px; box-shadow:var(--shadow);}
+.stat .n{font-family:"Fraunces",serif; font-size:1.6rem; font-weight:600; color:var(--ink); line-height:1;}
+.stat .l{font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; color:var(--text-dim); margin-top:5px;}
+.toolbar{
+  display:flex; flex-wrap:wrap; gap:10px; align-items:center;
+  background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:12px; margin-bottom:16px;
+}
+.toolbar input[type="search"]{
+  flex:1 1 200px; min-width:140px; padding:8px 12px; border-radius:7px; border:1px solid var(--border);
+  background:var(--bg); color:var(--text); font:inherit; font-size:.88rem;
+}
+select{
+  padding:8px 10px; border-radius:7px; border:1px solid var(--border); background:var(--bg); color:var(--text);
+  font:inherit; font-size:.85rem;
+}
+.count-pill{margin-left:auto; font-size:.8rem; color:var(--text-dim); white-space:nowrap;}
+.table-scroll{overflow-x:auto; border:1px solid var(--border); border-radius:10px; background:var(--surface); box-shadow:var(--shadow);}
+table{border-collapse:collapse; width:100%; min-width:920px;}
+thead th{
+  text-align:left; font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; color:var(--text-dim);
+  padding:11px 12px; border-bottom:1px solid var(--border); background:var(--surface-2); white-space:nowrap;
+}
+tbody td{padding:11px 12px; border-bottom:1px solid var(--border); font-size:.87rem; vertical-align:top;}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover{background:var(--surface-2);}
+.job-title{font-weight:600; color:var(--text);}
+.job-title a{color:inherit; text-decoration:none; border-bottom:1px dotted var(--text-dim);}
+.job-title a:hover{border-bottom-color:var(--text);}
+.institution{color:var(--text-dim); font-size:.82rem; margin-top:2px;}
+.site-tag{
+  display:inline-block; font-size:.72rem; padding:2px 8px; border-radius:99px;
+  background:var(--surface-2); border:1px solid var(--border); color:var(--ink-2); white-space:nowrap;
+}
+.pill{display:inline-flex; align-items:center; gap:5px; font-size:.76rem; font-weight:500; padding:3px 9px; border-radius:99px; white-space:nowrap;}
+.pill-good{background:var(--good-bg); color:var(--good);}
+.pill-bad{background:var(--bad-bg); color:var(--bad);}
+.pill-unknown{background:var(--unknown-bg); color:var(--unknown);}
+.pill::before{content:""; width:6px; height:6px; border-radius:50%; background:currentColor; flex:none;}
+.status-select{border:1px solid var(--border); background:var(--bg); border-radius:6px; padding:5px 8px; font-size:.8rem; color:var(--text);}
+.req-cell{max-width:230px; color:var(--text-dim); font-size:.82rem; line-height:1.4;}
+.deadline{font-size:.82rem;}
+.deadline.soon{color:var(--bad); font-weight:600;}
+.row-actions{display:flex; gap:6px;}
+.icon-btn{border:none; background:transparent; color:var(--text-dim); padding:4px 6px; border-radius:6px; font-size:.85rem;}
+.icon-btn:hover{background:var(--surface-2); color:var(--text);}
+.empty{padding:48px 20px; text-align:center; color:var(--text-dim);}
+.modal-backdrop{
+  position:fixed; inset:0; background:rgba(20,24,31,.45); display:flex; align-items:flex-start;
+  justify-content:center; padding:5vh 16px; overflow-y:auto; z-index:50;
+}
+.modal-backdrop[hidden]{display:none;}
+.modal{
+  background:var(--surface); border-radius:14px; padding:26px; width:100%; max-width:560px;
+  box-shadow:0 20px 60px rgba(0,0,0,.3); border:1px solid var(--border);
+}
+.modal h2{font-size:1.3rem; margin-bottom:18px; color:var(--ink);}
+.field-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px 14px;}
+.field{display:flex; flex-direction:column; gap:5px;}
+.field.full{grid-column:1/-1;}
+.field label{font-size:.76rem; font-weight:600; color:var(--text-dim); text-transform:uppercase; letter-spacing:.04em;}
+.field input, .field select, .field textarea{
+  padding:9px 10px; border-radius:7px; border:1px solid var(--border); background:var(--bg); color:var(--text); font:inherit; font-size:.88rem;
+}
+.field textarea{resize:vertical; min-height:60px; font-family:inherit;}
+.modal-actions{display:flex; justify-content:flex-end; gap:10px; margin-top:20px;}
+.hint{font-size:.78rem; color:var(--text-dim); margin-top:14px; line-height:1.5;}
+footer{margin-top:26px; text-align:center; color:var(--text-dim); font-size:.78rem;}
+@media (max-width:640px){
+  .field-grid{grid-template-columns:1fr;}
+  header{flex-direction:column; align-items:flex-start;}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="title-block">
+      <h1>Faculty Search Ledger</h1>
+      <div class="sub">Math · statistics · data science faculty, postdoc &amp; tenure-track openings — your local copy.</div>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-ghost" id="exportBtn" title="Download current data as data/jobs.json">⭳ Export JSON</button>
+      <label class="btn btn-ghost" style="margin:0;">
+        ⭱ Import JSON<input type="file" id="importInput" accept="application/json" hidden>
+      </label>
+      <button class="btn btn-primary" id="addBtn">+ Add posting</button>
+    </div>
+  </header>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="toolbar">
+    <input type="search" id="searchInput" placeholder="Search title, institution, notes…">
+    <select id="siteFilter"><option value="">All sites</option></select>
+    <select id="typeFilter">
+      <option value="">All position types</option>
+      <option>Tenure-Track</option>
+      <option>Faculty</option>
+      <option>Postdoc</option>
+      <option>Other</option>
+    </select>
+    <select id="sponsorFilter">
+      <option value="">Sponsorship: any</option>
+      <option>Yes</option>
+      <option>No</option>
+      <option>Unknown</option>
+    </select>
+    <select id="statusFilter">
+      <option value="">All statuses</option>
+      <option>New</option>
+      <option>Interested</option>
+      <option>Applied</option>
+      <option>Interview</option>
+      <option>Offer</option>
+      <option>Rejected</option>
+      <option>Withdrawn</option>
+    </select>
+    <span class="count-pill" id="countPill"></span>
+  </div>
+
+  <div class="table-scroll">
+    <table id="jobTable">
+      <thead>
+        <tr>
+          <th>Position</th>
+          <th>Site</th>
+          <th>Type</th>
+          <th>Sponsorship</th>
+          <th>Requirements</th>
+          <th>Deadline</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="jobBody"></tbody>
+    </table>
+    <div class="empty" id="emptyState" hidden>No postings match these filters. Add one, or import a jobs.json.</div>
+  </div>
+
+  <div class="hint">This is your local, git-tracked copy: everything you add or change is saved to this browser's storage automatically. To version it, click <strong>Export JSON</strong> and overwrite <code>jobs.json</code> before you commit — that file is the portable source of truth this ledger reads on first load. There's no live web search from this page; ask Claude in a chat to check the job sites and hand you an updated jobs.json when you want fresh postings.</div>
+
+  <footer>Personal use only.</footer>
+</div>
+
+<div class="modal-backdrop" id="modalBackdrop" hidden>
+  <div class="modal">
+    <h2 id="modalTitle">Add posting</h2>
+    <form id="jobForm">
+      <div class="field-grid">
+        <div class="field full">
+          <label for="f_title">Job title</label>
+          <input id="f_title" required placeholder="Assistant Professor of Statistics">
+        </div>
+        <div class="field full">
+          <label for="f_institution">Institution</label>
+          <input id="f_institution" required placeholder="University of Somewhere">
+        </div>
+        <div class="field">
+          <label for="f_site">Source site</label>
+          <select id="f_site">
+            <option>MathJobs</option>
+            <option>AcademicJobsOnline</option>
+            <option>AMSTAT</option>
+            <option>INFORMS</option>
+            <option>HigherEdJobs</option>
+            <option>Chronicle</option>
+            <option>SIAM</option>
+            <option>ACM</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="f_type">Position type</label>
+          <select id="f_type">
+            <option>Tenure-Track</option>
+            <option>Faculty</option>
+            <option>Postdoc</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="f_sponsor">Visa sponsorship</label>
+          <select id="f_sponsor">
+            <option>Unknown</option>
+            <option>Yes</option>
+            <option>No</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="f_status">Status</label>
+          <select id="f_status">
+            <option>New</option>
+            <option>Interested</option>
+            <option>Applied</option>
+            <option>Interview</option>
+            <option>Offer</option>
+            <option>Rejected</option>
+            <option>Withdrawn</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="f_deadline">Deadline</label>
+          <input id="f_deadline" type="date">
+        </div>
+        <div class="field">
+          <label for="f_dateapplied">Date applied</label>
+          <input id="f_dateapplied" type="date">
+        </div>
+        <div class="field full">
+          <label for="f_url">Posting URL</label>
+          <input id="f_url" type="url" placeholder="https://…">
+        </div>
+        <div class="field full">
+          <label for="f_requirements">Requirements</label>
+          <textarea id="f_requirements" placeholder="PhD required by start date, 3 letters, teaching statement…"></textarea>
+        </div>
+        <div class="field full">
+          <label for="f_notes">Notes</label>
+          <textarea id="f_notes" placeholder="Anything you want to remember about this one"></textarea>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn" id="deleteBtn" style="margin-right:auto; display:none; color:var(--bad);">Delete</button>
+        <button type="button" class="btn" id="cancelBtn">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var STORAGE_KEY = "facultyLedgerJobs";
+  var SITES = ["MathJobs","AcademicJobsOnline","AMSTAT","INFORMS","HigherEdJobs","Chronicle","SIAM","ACM","Other"];
+  var siteFilterEl = document.getElementById("siteFilter");
+  SITES.forEach(function(s){
+    var o = document.createElement("option"); o.textContent = s; siteFilterEl.appendChild(o);
+  });
+
+  var jobs = {}; // id -> data
+
+  var jobBody = document.getElementById("jobBody");
+  var emptyState = document.getElementById("emptyState");
+  var statsEl = document.getElementById("stats");
+  var countPill = document.getElementById("countPill");
+
+  var searchInput = document.getElementById("searchInput");
+  var typeFilter = document.getElementById("typeFilter");
+  var sponsorFilter = document.getElementById("sponsorFilter");
+  var statusFilter = document.getElementById("statusFilter");
+
+  [searchInput, siteFilterEl, typeFilter, sponsorFilter, statusFilter].forEach(function(el){
+    el.addEventListener("input", render);
+    el.addEventListener("change", render);
+  });
+
+  function fmtDate(iso){
+    if(!iso) return "—";
+    var d = new Date(iso + "T00:00:00");
+    if(isNaN(d.getTime())) return iso;
+    return d.toLocaleDateString(undefined, {month:"short", day:"numeric", year:"numeric"});
+  }
+  function daysUntil(iso){
+    if(!iso) return null;
+    var d = new Date(iso + "T00:00:00");
+    if(isNaN(d.getTime())) return null;
+    return (d.getTime() - Date.now()) / 86400000;
+  }
+  function escapeHtml(s){
+    return (s||"").replace(/[&<>"']/g, function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+    });
+  }
+  function sponsorPillClass(v){
+    if(v === "Yes") return "pill-good";
+    if(v === "No") return "pill-bad";
+    return "pill-unknown";
+  }
+
+  function persist(){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(jobs)); }
+    catch(e){ console.warn("localStorage save failed", e); }
+  }
+
+  function render(){
+    var q = searchInput.value.trim().toLowerCase();
+    var site = siteFilterEl.value, type = typeFilter.value, sponsor = sponsorFilter.value, status = statusFilter.value;
+
+    var list = Object.keys(jobs).map(function(id){ return Object.assign({id:id}, jobs[id]); });
+    list = list.filter(function(j){
+      if(site && j.site !== site) return false;
+      if(type && j.positionType !== type) return false;
+      if(sponsor && (j.sponsorship||"Unknown") !== sponsor) return false;
+      if(status && (j.status||"New") !== status) return false;
+      if(q){
+        var hay = [j.title, j.institution, j.notes, j.requirements].join(" ").toLowerCase();
+        if(hay.indexOf(q) === -1) return false;
+      }
+      return true;
+    });
+    list.sort(function(a,b){
+      var da = a.deadline || "9999-99-99", dbb = b.deadline || "9999-99-99";
+      if(da !== dbb) return da < dbb ? -1 : 1;
+      return (b.dateFound||"").localeCompare(a.dateFound||"");
+    });
+
+    jobBody.innerHTML = "";
+    emptyState.hidden = list.length > 0;
+    countPill.textContent = list.length + " of " + Object.keys(jobs).length + " shown";
+
+    list.forEach(function(j){
+      var tr = document.createElement("tr");
+      var days = daysUntil(j.deadline);
+      var soon = days !== null && days >= 0 && days <= 10;
+      tr.innerHTML =
+        '<td><div class="job-title">' + (j.url ? '<a href="'+escapeHtml(j.url)+'" target="_blank" rel="noopener">'+escapeHtml(j.title||"Untitled")+'</a>' : escapeHtml(j.title||"Untitled")) + '</div>' +
+          '<div class="institution">' + escapeHtml(j.institution||"") + '</div></td>' +
+        '<td><span class="site-tag">' + escapeHtml(j.site||"Other") + '</span></td>' +
+        '<td>' + escapeHtml(j.positionType||"Other") + '</td>' +
+        '<td><span class="pill ' + sponsorPillClass(j.sponsorship) + '">' + escapeHtml(j.sponsorship||"Unknown") + '</span></td>' +
+        '<td class="req-cell">' + escapeHtml(j.requirements||"—") + '</td>' +
+        '<td class="deadline mono' + (soon ? ' soon' : '') + '">' + fmtDate(j.deadline) + '</td>' +
+        '<td></td>' +
+        '<td><div class="row-actions">' +
+          '<button class="icon-btn edit-btn" title="Edit">✎</button>' +
+        '</div></td>';
+
+      var statusTd = tr.children[6];
+      var sel = document.createElement("select");
+      sel.className = "status-select";
+      ["New","Interested","Applied","Interview","Offer","Rejected","Withdrawn"].forEach(function(s){
+        var o = document.createElement("option"); o.textContent = s; if((j.status||"New")===s) o.selected = true; sel.appendChild(o);
+      });
+      sel.addEventListener("change", function(){ updateJob(j.id, {status: sel.value}); });
+      statusTd.appendChild(sel);
+
+      tr.querySelector(".edit-btn").addEventListener("click", function(){ openModal(j.id); });
+      jobBody.appendChild(tr);
+    });
+
+    renderStats();
+  }
+
+  function renderStats(){
+    var all = Object.keys(jobs).map(function(id){ return jobs[id]; });
+    var total = all.length;
+    var applied = all.filter(function(j){ return ["Applied","Interview","Offer"].indexOf(j.status)!==-1; }).length;
+    var interview = all.filter(function(j){ return j.status === "Interview"; }).length;
+    var sponsoring = all.filter(function(j){ return j.sponsorship === "Yes"; }).length;
+    var soonCount = all.filter(function(j){ var d = daysUntil(j.deadline); return d!==null && d>=0 && d<=10; }).length;
+    var stats = [
+      {n: total, l: "Tracked"},
+      {n: applied, l: "Applied"},
+      {n: interview, l: "Interviewing"},
+      {n: sponsoring, l: "Sponsoring"},
+      {n: soonCount, l: "Due ≤10 days"}
+    ];
+    statsEl.innerHTML = stats.map(function(s){
+      return '<div class="stat"><div class="n mono">' + s.n + '</div><div class="l">' + s.l + '</div></div>';
+    }).join("");
+  }
+
+  function updateJob(id, patch){
+    Object.assign(jobs[id], patch);
+    persist();
+    render();
+  }
+
+  // ---- modal ----
+  var backdrop = document.getElementById("modalBackdrop");
+  var form = document.getElementById("jobForm");
+  var modalTitle = document.getElementById("modalTitle");
+  var deleteBtn = document.getElementById("deleteBtn");
+  var editingId = null;
+
+  function fieldEl(name){ return document.getElementById("f_" + name); }
+
+  function openModal(id){
+    editingId = id || null;
+    form.reset();
+    if(id){
+      var j = jobs[id];
+      modalTitle.textContent = "Edit posting";
+      deleteBtn.style.display = "";
+      fieldEl("title").value = j.title||"";
+      fieldEl("institution").value = j.institution||"";
+      fieldEl("site").value = j.site||"MathJobs";
+      fieldEl("type").value = j.positionType||"Tenure-Track";
+      fieldEl("sponsor").value = j.sponsorship||"Unknown";
+      fieldEl("status").value = j.status||"New";
+      fieldEl("deadline").value = j.deadline||"";
+      fieldEl("dateapplied").value = j.dateApplied||"";
+      fieldEl("url").value = j.url||"";
+      fieldEl("requirements").value = j.requirements||"";
+      fieldEl("notes").value = j.notes||"";
+    } else {
+      modalTitle.textContent = "Add posting";
+      deleteBtn.style.display = "none";
+    }
+    backdrop.hidden = false;
+    fieldEl("title").focus();
+  }
+  function closeModal(){ backdrop.hidden = true; editingId = null; }
+
+  document.getElementById("addBtn").addEventListener("click", function(){ openModal(null); });
+  document.getElementById("cancelBtn").addEventListener("click", closeModal);
+  backdrop.addEventListener("click", function(e){ if(e.target === backdrop) closeModal(); });
+
+  deleteBtn.addEventListener("click", function(){
+    if(!editingId) return;
+    var id = editingId;
+    delete jobs[id];
+    persist();
+    closeModal();
+    render();
+  });
+
+  form.addEventListener("submit", function(e){
+    e.preventDefault();
+    var data = {
+      title: fieldEl("title").value.trim(),
+      institution: fieldEl("institution").value.trim(),
+      site: fieldEl("site").value,
+      positionType: fieldEl("type").value,
+      sponsorship: fieldEl("sponsor").value,
+      status: fieldEl("status").value,
+      deadline: fieldEl("deadline").value,
+      dateApplied: fieldEl("dateapplied").value,
+      url: fieldEl("url").value.trim(),
+      requirements: fieldEl("requirements").value.trim(),
+      notes: fieldEl("notes").value.trim()
+    };
+    if(editingId){
+      data.dateFound = jobs[editingId].dateFound || new Date().toISOString().slice(0,10);
+      jobs[editingId] = data;
+    } else {
+      var id = "job_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2,8);
+      data.dateFound = new Date().toISOString().slice(0,10);
+      jobs[id] = data;
+    }
+    persist();
+    render();
+    closeModal();
+  });
+
+  // ---- export / import ----
+  document.getElementById("exportBtn").addEventListener("click", function(){
+    var list = Object.keys(jobs).map(function(id){ return Object.assign({id: id}, jobs[id]); });
+    var blob = new Blob([JSON.stringify(list, null, 2)], {type: "application/json"});
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "jobs.json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+  });
+
+  document.getElementById("importInput").addEventListener("change", function(e){
+    var file = e.target.files[0];
+    if(!file) return;
+    var reader = new FileReader();
+    reader.onload = function(){
+      try{
+        var list = JSON.parse(reader.result);
+        var next = {};
+        list.forEach(function(j){
+          var id = j.id || ("job_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2,8));
+          var copy = Object.assign({}, j);
+          delete copy.id;
+          next[id] = copy;
+        });
+        jobs = next;
+        persist();
+        render();
+      } catch(err){
+        alert("Could not parse that file as JSON: " + err.message);
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  });
+
+  // ---- load: localStorage first, else data/jobs.json ----
+  function loadFromLocalStorage(){
+    try{
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if(raw){ jobs = JSON.parse(raw); return true; }
+    } catch(e){ console.warn("localStorage read failed", e); }
+    return false;
+  }
+
+  function loadSeed(){
+    fetch("jobs.json")
+      .then(function(r){ if(!r.ok) throw new Error("no seed file"); return r.json(); })
+      .then(function(list){
+        var next = {};
+        list.forEach(function(j){
+          var id = j.id || ("job_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2,8));
+          var copy = Object.assign({}, j);
+          delete copy.id;
+          next[id] = copy;
+        });
+        jobs = next;
+        persist();
+        render();
+      })
+      .catch(function(){ /* no seed file reachable (e.g. opened via file://) — start empty */ render(); });
+  }
+
+  function init(){
+    if(!loadFromLocalStorage()) loadSeed();
+    render();
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>
